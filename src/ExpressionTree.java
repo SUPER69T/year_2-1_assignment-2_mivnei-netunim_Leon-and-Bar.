@@ -25,15 +25,16 @@ public class ExpressionTree{
         Stack<Node> stack = new Stack<>();
         String[] tokens = postfix.trim().split("\\s+");
         for(String token : tokens){
-            System.out.println(stack);
+            //stack.forEach(t->System.out.print(t.value));
+            //System.out.println();
             if(!isOperator(token)){ //means the token is an operand.
                 Node n = new Node(token); //constructing a new Node.
                 stack.push(n);
             }
             else{
                 Node n = new Node(token); //constructing a new Node.
-                n.left = stack.pop();
                 n.right = stack.pop();
+                n.left = stack.pop();
                 stack.push(n);
             }
         }
@@ -58,12 +59,25 @@ public class ExpressionTree{
      * @param node the root node of the expression tree
      */
     public void inOrder(Node node){
+        //System.out.println("value: " + node.value);
+        //System.out.println("left: " + node.left.value);
+        //System.out.println("right: " + node.right.value);
         if (node != null){
             if (isOperator(node.value)){
                 System.out.print("( ");
             }
-
-            // Implement the logic here
+            if(node.left == null && node.right == null) {
+                System.out.print(node.value + " "); //printing a leaf operand or an operator itself.
+            }
+            if(node.left != null){ //checking left tree.
+                inOrder(node.left);
+                System.out.print(node.value);
+                System.out.print(" ");
+            }
+            if (node.right != null){ //checking right tree.
+                inOrder(node.right);
+                System.out.print(") ");
+            }
         }
     }
     //*/
