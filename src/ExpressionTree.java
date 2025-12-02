@@ -90,7 +90,12 @@ public class ExpressionTree{
     public void preOrder(Node node){
         if (node != null){
             System.out.print(node.value + " ");
-            // implement the logic here
+            if(node.left != null) {
+                preOrder(node.left);
+            }
+            if(node.right != null) {
+                preOrder(node.right);
+            }
         }
     }
     //*/
@@ -139,16 +144,16 @@ public class ExpressionTree{
         String postfix = "4 3 7 * + 5 3 4 + / - 6 +";  // Replace with your input
 
         Node root = et.createExprTreePostfix(postfix);
-        ///*
+        /*
         System.out.print("In-order: ");
         et.inOrder(root);
         System.out.println();
-        //*/
-        /*
+        */
+        ///*
         System.out.print("Pre-order: ");
         et.preOrder(root);
         System.out.println();
-        */
+        //*/
         /*
         System.out.print("Post-order: ");
         et.postOrder(root);
