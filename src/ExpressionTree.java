@@ -25,7 +25,8 @@ public class ExpressionTree{
         Stack<Node> stack = new Stack<>();
         String[] tokens = postfix.trim().split("\\s+");
         for(String token : tokens){
-            System.out.println(stack);
+            //stack.forEach(t->System.out.print(t.value));
+            //System.out.println();
             if(!isOperator(token)){ //means the token is an operand.
                 Node n = new Node(token); //constructing a new Node.
                 stack.push(n);
@@ -62,8 +63,15 @@ public class ExpressionTree{
             if (isOperator(node.value)){
                 System.out.print("( ");
             }
-
-            // Implement the logic here
+            if(node.left != null){ //checking left tree.
+                inOrder(node.left);
+                System.out.println(node.value);
+            }
+            else if (node.right != null){ //checking right tree.
+                inOrder(node.right);
+                System.out.println();
+            }
+            System.out.print(node.value + " "); //checking left tree.
         }
     }
     //*/
