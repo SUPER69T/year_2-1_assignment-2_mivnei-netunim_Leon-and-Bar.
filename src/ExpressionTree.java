@@ -1,3 +1,5 @@
+import jdk.dynalink.Operation;
+import java.util.Map;
 import java.util.Stack;
 
 ///*
@@ -59,9 +61,6 @@ public class ExpressionTree{
      * @param node the root node of the expression tree
      */
     public void inOrder(Node node){
-        //System.out.println("value: " + node.value);
-        //System.out.println("left: " + node.left.value);
-        //System.out.println("right: " + node.right.value);
         if (node != null){
             if (isOperator(node.value)){
                 System.out.print("( ");
@@ -120,6 +119,26 @@ public class ExpressionTree{
     }
     //*/
     ///*
+    ///*
+    /**
+     * Checks if a token is an operator.
+     *
+     * @param o the operator to return the function for.
+     * @return the operation function itself.
+     */
+    private  returnOperator(String o){ //why is this private? were curious..
+        Map<String, Operation> operations = Map.of(
+                "+", new Operation("+"),
+                "-", '-',
+                "*", '*',
+                "/",'/',
+                "^",'^'
+        );
+        return operations
+    }
+    //*/
+    //*/
+    ///*
     /**
      * Evaluates the expression tree.
      *
@@ -131,12 +150,13 @@ public class ExpressionTree{
     public int evaluateExpression(Node node){
         if (node == null) return 0;
 
-        if (!isOperator(node.value)){
+        if (!isOperator(node.value)){ //the node is an operand:
             return Integer.parseInt(node.value);
         }
-
-        // Implement the logic here
-        return 7;
+        //the node is an operator:
+        int operand1 = evaluateExpression(node.left);
+        int operand2 = evaluateExpression(node.right);
+        return operand1<node.value>operand2;
     }
     //*/
     public static void main(String[] args){
@@ -149,18 +169,18 @@ public class ExpressionTree{
         et.inOrder(root);
         System.out.println();
         */
-        ///*
+        /*
         System.out.print("Pre-order: ");
         et.preOrder(root);
         System.out.println();
-        //*/
+        */
         /*
         System.out.print("Post-order: ");
         et.postOrder(root);
         System.out.println();
         */
-        /*
+        ///*
         System.out.println("Evaluated Result: " + et.evaluateExpression(root));
-        */
+        //*/
     }
 }
