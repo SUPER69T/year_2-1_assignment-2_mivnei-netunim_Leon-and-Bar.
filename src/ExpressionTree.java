@@ -1,6 +1,7 @@
 import jdk.dynalink.Operation;
 import java.util.Map;
 import java.util.Stack;
+import java.util.function.BiFunction;
 
 ///*
 class Node{
@@ -29,7 +30,7 @@ public class ExpressionTree{
         for(String token : tokens){
             //stack.forEach(t->System.out.print(t.value));
             //System.out.println();
-            if(!isOperator(token)){ //means the token is an operand.
+            if(!Operators.isOperator(token)){ //means the token is an operand.
                 Node n = new Node(token); //constructing a new Node.
                 stack.push(n);
             }
@@ -43,18 +44,44 @@ public class ExpressionTree{
         return stack.pop();
     }
     //*/
-    // Helper method to check if a token is an operator:
     ///*
-    /**
-     * Checks if a token is an operator.
-     *
-     * @param token the token to check
-     * @return true if the token is an operator, false otherwise
-     */
-    private boolean isOperator(String token){ //why is this private? were curious..
-        return "+-*/^".contains(token);
+    public final class Operators{ //a general class for checking and getting the operators.
+        //the Map that holds the operators as keys and their lambda functions as the values:
+        //-------
+        private static final Map<String, BiFunction<Integer, Integer, Integer>> OPS =
+                Map.of(
+                "+", (a,b) -> a + b,
+                "-", (a,b) -> a - b,
+                "*", (a,b) -> a * b,
+                "/",(a,b) -> a / b,
+                "^",(a,b) -> a ^ b);
+        //-------
+        /**
+         * Returns the operation function.
+         *
+         * @return the operation function itself as a lambda function.
+         * @throws IllegalArgumentException - if - op is non existant in the - OPS-Map.
+         */
+        public static BiFunction<Integer, Integer, Integer> get(String op){ //also possible to do with the IntBinaryOperator interface, as it -
+            //prevents boxing of primitive operators(int) in case of only using int-types but constantly wrapping then in the Integer wrapper-class.
+            var f = OPS.get(op);
+            if (f == null) {
+                throw new IllegalArgumentException("Unknown operator: " + op);
+            }
+            return f;
+        }
+        /**
+         * Checks if a string is an operator contained within the operators map.
+         *
+         * @param s the string to check.
+         * @return true if the string is an operator, false otherwise.
+         */
+        public static boolean isOperator(String s){
+            return OPS.containsKey(s);
+        }
     }
     //*/
+    ///*
     /**
      * Performs an in-order traversal of the expression tree.
      *
@@ -62,7 +89,7 @@ public class ExpressionTree{
      */
     public void inOrder(Node node){
         if (node != null){
-            if (isOperator(node.value)){
+            if (Operators.isOperator(node.value)){
                 System.out.print("( ");
             }
             if(node.left == null && node.right == null) {
@@ -106,7 +133,7 @@ public class ExpressionTree{
      */
     public void postOrder(Node node){
         if (node != null){
-            if (isOperator(node.value)) {
+            if (Operators.isOperator(node.value)) {
                 if (node.left == null && node.right == null) System.out.print(node.value);
                 else {
                     postOrder(node.left);
@@ -117,26 +144,6 @@ public class ExpressionTree{
         }
         //else returns with void value.
     }
-    //*/
-    ///*
-    ///*
-    /**
-     * Checks if a token is an operator.
-     *
-     * @param o the operator to return the function for.
-     * @return the operation function itself.
-     */
-    private  returnOperator(String o){ //why is this private? were curious..
-        Map<String, Operation> operations = Map.of(
-                "+", new Operation("+"),
-                "-", '-',
-                "*", '*',
-                "/",'/',
-                "^",'^'
-        );
-        return operations
-    }
-    //*/
     //*/
     ///*
     /**
@@ -150,13 +157,13 @@ public class ExpressionTree{
     public int evaluateExpression(Node node){
         if (node == null) return 0;
 
-        if (!isOperator(node.value)){ //the node is an operand:
+        if (!Operators.isOperator(node.value)){ //the node is an operand:
             return Integer.parseInt(node.value);
         }
         //the node is an operator:
-        int operand1 = evaluateExpression(node.left);
-        int operand2 = evaluateExpression(node.right);
-        return operand1<node.value>operand2;
+        int left = evaluateExpression(node.left);
+        int right = evaluateExpression(node.right);
+        return Operators.get(node.value).apply(left, right);
     }
     //*/
     public static void main(String[] args){
@@ -179,8 +186,8 @@ public class ExpressionTree{
         et.postOrder(root);
         System.out.println();
         */
-        ///*
-        System.out.println("Evaluated Result: " + et.evaluateExpression(root));
-        //*/
+        /*
+        System.out.println("Evaluated Result: " + et.evaluateExpression(root) + ".");
+        */
     }
 }
