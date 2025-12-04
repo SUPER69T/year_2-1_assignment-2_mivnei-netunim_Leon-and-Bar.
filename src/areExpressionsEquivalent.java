@@ -1,5 +1,4 @@
 import java.util.HashMap;
-public class areExpressionsEquivalent{
     ///*
     /**checking whether two trees contain the same values.
      *
@@ -13,22 +12,28 @@ public class areExpressionsEquivalent{
      *@return true if the trees contain the same elements, false if they don't.
      */
     public boolean areExpressionsEquivalent(Node T1_node, Node T2_node) {
-        HashMap<Node, Integer> singles_holder;
-        public void rec_equivalence(Node T1_node){
-            if (T1_node.left != null) { //checking for null-base case.
-                if (!ExpressionTree.Operators.isOperator(T1_node.value)) { //checking that the node is an operand.
-                    singles_holder.put(T1_node, Integer.valueOf(T1_node.value)); //appending to the map only in case of an operand.
+        HashMap<Integer, Node> singles_holder;
+        public void rec_equivalence(Node node, Boolean T){
+            if (node.left != null) { //checking for null-base case.
+                if (!ExpressionTree.Operators.isOperator(node.value)){ //checking that the node is an operand.
+                    if(T) {//
+                        singles_holder.put(Integer.valueOf(node.value), node); //appending to the map only in case of an operand of the T1_node.
+                    }
+                    else {
+                        singles_holder.remove(Integer.valueOf(node.value), node); //removing from the map only in case of an operand of the T2_node.
+                    }
                 }
-                areExpressionsEquivalent.rec_equivalence(T1_node.left);
-                areExpressionsEquivalent.rec_equivalence(T1_node.right);
+                rec_equivalence(node.left, T);
+                rec_equivalence(node.right, T);
             }
             //else: returning void.
         }
-        rec_equivalence(T1_node);
+        rec_equivalence(T1_node, true); //true = T1_node.
+        rec_equivalence(T2_node, false); //false = T2_node.
         return singles_holder.size() == 0;
     }
     //*/
-    public static void main(String[] args){
+    public void main(String[] args){
         //for exercise 4:
         //-----
         ExpressionTree et1 = new ExpressionTree();
@@ -40,4 +45,3 @@ public class areExpressionsEquivalent{
         System.out.print(areExpressionsEquivalent(root1, root2));
         //-----
     }
-}
