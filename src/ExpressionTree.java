@@ -1,4 +1,3 @@
-import jdk.dynalink.Operation;
 import java.util.Map;
 import java.util.Stack;
 import java.util.function.BiFunction;
@@ -45,7 +44,7 @@ public class ExpressionTree{
     }
     //*/
     ///*
-    public final class Operators{ //a general class for checking and getting the operators.
+    public final class Operators { //a general class for checking and getting the operators.
         //the Map that holds the operators as keys and their lambda functions as the values:
         //-------
         private static final Map<String, BiFunction<Integer, Integer, Integer>> OPS =
@@ -154,7 +153,7 @@ public class ExpressionTree{
      * @throws ArithmeticException if division by zero occurs
      * @throws IllegalArgumentException if an invalid operator is encountered or if operands are missing
      */
-    public int evaluateExpression(Node node){
+    public int evaluateExpression(Node node) {
         if (node == null) return 0;
 
         if (!Operators.isOperator(node.value)){ //the node is an operand:
@@ -163,7 +162,12 @@ public class ExpressionTree{
         //the node is an operator:
         int left = evaluateExpression(node.left);
         int right = evaluateExpression(node.right);
-        return Operators.get(node.value).apply(left, right);
+        int result = 0;
+        try {
+            result = Operators.get(node.value).apply(left, right); //might throw - NullPointerException if a division by 0 occurs.
+        }
+        catch (NullPointerException e) {System.out.print(e.getMessage());}
+        return result;
     }
     //*/
     public static void main(String[] args){
