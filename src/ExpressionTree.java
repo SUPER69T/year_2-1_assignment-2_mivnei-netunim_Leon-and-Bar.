@@ -1,3 +1,4 @@
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 import java.util.function.BiFunction;
@@ -169,6 +170,33 @@ public class ExpressionTree{
         catch (NullPointerException e) {System.out.print(e.getMessage());}
         return result;
     }
+    /**
+     *
+     *
+     */
+    public boolean areExpressionsEquivalent(Node T1_node, Node T2_node){
+        HashMap<Integer, Node> singles_holder = HashMap.newHashMap(0);
+        System.out.println("singles_holder: " + singles_holder);
+        class nested_equivalence_class{
+            public static void rec_equivalence(Node node, Boolean T, HashMap<Integer, Node> singles_holder){
+                if (node.left != null){ //checking for null-base case.
+                    if (!ExpressionTree.Operators.isOperator(node.value)){ //checking that the node is an operand.
+                        if (T) {//
+                            singles_holder.put(Integer.valueOf(node.value), node); //appending to the map only in case of an operand of the T1_node.
+                        } else {
+                            singles_holder.remove(Integer.valueOf(node.value), node); //removing from the map only in case of an operand of the T2_node.
+                        }
+                    }
+                    rec_equivalence(node.left, T, singles_holder);
+                    rec_equivalence(node.right, T, singles_holder);
+                }
+                //else: returning void.
+            }
+        }
+        nested_equivalence_class.rec_equivalence(T1_node, true, singles_holder); //true = T1_node.
+        nested_equivalence_class.rec_equivalence(T2_node, false, singles_holder); //false = T2_node.
+        return singles_holder.size() == 0;
+    }
     //*/
     public static void main(String[] args){
         ExpressionTree et = new ExpressionTree();
@@ -193,5 +221,15 @@ public class ExpressionTree{
         /*
         System.out.println("Evaluated Result: " + et.evaluateExpression(root) + ".");
         */
+        //for exercise 4:
+        //-----
+        ExpressionTree et1 = new ExpressionTree();
+        String postfix1 = "4 3 7 + + 5 3 4 + + + 6 +";
+        Node root1 = et1.createExprTreePostfix(postfix1);
+        ExpressionTree et2 = new ExpressionTree();
+        String postfix2 = "4 4 7 + + 3 6 5 + + + 3 +";
+        Node root2 = et2.createExprTreePostfix(postfix2);
+        System.out.print(et.areExpressionsEquivalent(root1, root2));
+        //-----
     }
 }
