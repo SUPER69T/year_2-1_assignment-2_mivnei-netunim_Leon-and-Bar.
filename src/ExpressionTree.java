@@ -24,13 +24,14 @@ public class ExpressionTree{
      * @return the root node of the expression tree
      */
 
+    Operators OP = new Operators(); //gonna be useful for later isOperator() checks.
     public Node createExprTreePostfix(String postfix){
         Stack<Node> stack = new Stack<>();
         String[] tokens = postfix.trim().split("\\s+");
         for(String token : tokens){
             //stack.forEach(t->System.out.print(t.value));
             //System.out.println();
-            if(!Operators.isOperator(token)){ //means the token is an operand.
+            if(!OP.isOperator(token)){ //means the token is an operand.
                 Node n = new Node(token); //constructing a new Node.
                 stack.push(n);
             }
@@ -45,24 +46,24 @@ public class ExpressionTree{
     }
     //*/
     ///*
-    public final class Operators { //a general class for checking and getting the operators.
+    public final class Operators{ //a general class for checking and getting the operators.
         //the Map that holds the operators as keys and their lambda functions as the values:
         //-------
-        private static final Map<String, BiFunction<Integer, Integer, Integer>> OPS =
+        private final Map<String, BiFunction<Integer, Integer, Integer>> OPS =
                 Map.of(
                 "+", (a,b) -> a + b,
                 "-", (a,b) -> a - b,
                 "*", (a,b) -> a * b,
                 "/",(a,b) -> a / b,
-                "^",(a,b) -> a ^ b);
+                "^",(a,b) -> (Integer)(int)Math.pow(a, b)); //...that's weird...
         //-------
         /**
          * Returns the operation function.
          *
          * @return the operation function itself as a lambda function.
-         * @throws IllegalArgumentException - if - op is non existant in the - OPS-Map.
+         * @throws IllegalArgumentException - if - op is non-existent in the - OPS-Map.
          */
-        public static BiFunction<Integer, Integer, Integer> get(String op){ //also possible to do with the IntBinaryOperator interface, as it -
+        public BiFunction<Integer, Integer, Integer> get(String op){ //also possible to do with the IntBinaryOperator interface, as it -
             //prevents boxing of primitive operators(int) in case of only using int-types but constantly wrapping then in the Integer wrapper-class.
             var f = OPS.get(op);
             if (f == null) {
@@ -76,7 +77,7 @@ public class ExpressionTree{
          * @param s the string to check.
          * @return true if the string is an operator, false otherwise.
          */
-        public static boolean isOperator(String s){
+        public boolean isOperator(String s){ //change from static.
             return OPS.containsKey(s);
         }
     }
@@ -88,8 +89,8 @@ public class ExpressionTree{
      * @param node the root node of the expression tree
      */
     public void inOrder(Node node){
-        if (node != null){
-            if (Operators.isOperator(node.value)){
+        if(node != null){
+            if(OP.isOperator(node.value)){
                 System.out.print("( ");
             }
             if(node.left == null && node.right == null) {
@@ -133,7 +134,7 @@ public class ExpressionTree{
      */
     public void postOrder(Node node){
         if (node != null){
-            if (Operators.isOperator(node.value)) {
+            if (OP.isOperator(node.value)) {
                 if (node.left == null && node.right == null) System.out.print(node.value);
                 else {
                     postOrder(node.left);
@@ -157,7 +158,7 @@ public class ExpressionTree{
     public int evaluateExpression(Node node) {
         if (node == null) return 0;
 
-        if (!Operators.isOperator(node.value)){ //the node is an operand:
+        if (!OP.isOperator(node.value)){ //the node is an operand:
             return Integer.parseInt(node.value);
         }
         //the node is an operator:
@@ -165,37 +166,48 @@ public class ExpressionTree{
         int right = evaluateExpression(node.right);
         int result = 0;
         try {
-            result = Operators.get(node.value).apply(left, right); //might throw - NullPointerException if a division by 0 occurs.
+            result = OP.get(node.value).apply(left, right); //might throw - NullPointerException if a division by 0 occurs.
         }
         catch (NullPointerException e) {System.out.print(e.getMessage());}
         return result;
     }
+    ///*
     /**
      *
      *
      */
     public boolean areExpressionsEquivalent(Node T1_node, Node T2_node){
+        //checking - 3 null cases:
+        if(T1_node.value == null && T2_node.value == null) return true;
+        else if(T1_node.value == null || T2_node.value == null) return false;
+        //
         HashMap<Integer, Node> singles_holder = HashMap.newHashMap(0);
         System.out.println("singles_holder: " + singles_holder);
-        class nested_equivalence_class{
-            public static void rec_equivalence(Node node, Boolean T, HashMap<Integer, Node> singles_holder){
-                if (node.left != null){ //checking for null-base case.
-                    if (!ExpressionTree.Operators.isOperator(node.value)){ //checking that the node is an operand.
-                        if (T) {//
-                            singles_holder.put(Integer.valueOf(node.value), node); //appending to the map only in case of an operand of the T1_node.
-                        } else {
-                            singles_holder.remove(Integer.valueOf(node.value), node); //removing from the map only in case of an operand of the T2_node.
-                        }
-                    }
-                    rec_equivalence(node.left, T, singles_holder);
-                    rec_equivalence(node.right, T, singles_holder);
-                }
-                //else: returning void.
-            }
-        }
-        nested_equivalence_class.rec_equivalence(T1_node, true, singles_holder); //true = T1_node.
-        nested_equivalence_class.rec_equivalence(T2_node, false, singles_holder); //false = T2_node.
+        rec_equivalence(T1_node, true, singles_holder); //true = T1_node.
+        rec_equivalence(T2_node, false, singles_holder); //false = T2_node.
         return singles_holder.size() == 0;
+    }
+    //*/
+    ///*
+    /**An accommodating method for areExpressionsEquivalent.
+     *
+     *@param: node -
+     *        B -
+     *        singles_holder -
+     */
+    public void rec_equivalence(Node node, Boolean B, HashMap<Integer, Node> singles_holder){
+        if (node.value != null){ //checking for null-base case.
+            if(!OP.isOperator(node.value)){ //checking that the node is an operand.
+                if(B){ //boolean variable.
+                    singles_holder.put(Integer.parseInt(node.value), node); //appending to the map only in case of an operand of the T1_node.
+                }else{
+                    singles_holder.remove(Integer.parseInt(node.value), node); //removing from the map only in case of an operand of the T2_node.
+                }
+            }
+            if(node.left.value != null) rec_equivalence(node.left, B, singles_holder);
+            if(node.right.value != null) rec_equivalence(node.right, B, singles_holder);
+        }
+        //else: returning void.
     }
     //*/
     public static void main(String[] args){
@@ -203,6 +215,7 @@ public class ExpressionTree{
         String postfix = "4 3 7 * + 5 3 4 + / - 6 +";  // Replace with your input
 
         Node root = et.createExprTreePostfix(postfix);
+
         /*
         System.out.print("In-order: ");
         et.inOrder(root);
@@ -229,7 +242,8 @@ public class ExpressionTree{
         ExpressionTree et2 = new ExpressionTree();
         String postfix2 = "4 4 7 + + 3 6 5 + + + 3 +";
         Node root2 = et2.createExprTreePostfix(postfix2);
-        System.out.print(et.areExpressionsEquivalent(root1, root2));
+        ExpressionTree Test = new ExpressionTree();
+        System.out.print(Test.areExpressionsEquivalent(root1, root2));
         //-----
     }
 }
