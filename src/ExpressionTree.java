@@ -181,7 +181,7 @@ public class ExpressionTree{
         if(T1_node.value == null && T2_node.value == null) return true;
         else if(T1_node.value == null || T2_node.value == null) return false;
         //
-        HashMap<Integer, Node> singles_holder = HashMap.newHashMap(0);
+        HashMap<Node, Integer> singles_holder = new HashMap<>();
         System.out.println("singles_holder: " + singles_holder);
         rec_equivalence(T1_node, true, singles_holder); //true = T1_node.
         rec_equivalence(T2_node, false, singles_holder); //false = T2_node.
@@ -191,21 +191,25 @@ public class ExpressionTree{
     ///*
     /**An accommodating method for areExpressionsEquivalent.
      *
-     *@param: node -
-     *        B -
-     *        singles_holder -
+     *@Params: node - T1/T2 roots and their child-nodes.
+     *
+     *@param: B - A boolean variable, telling which tree is currently running: T1/T2.
+     *
+     *@param: singles_holder - the map from areExpressionsEquivalent, being modified.
+     *
+     * @Returns: void.
      */
-    public void rec_equivalence(Node node, Boolean B, HashMap<Integer, Node> singles_holder){
-        if (node.value != null){ //checking for null-base case.
+    public void rec_equivalence(Node node, Boolean B, HashMap<Node, Integer> singles_holder){
+        if (node != null){ //checking for null-base case.
             if(!OP.isOperator(node.value)){ //checking that the node is an operand.
                 if(B){ //boolean variable.
-                    singles_holder.put(Integer.parseInt(node.value), node); //appending to the map only in case of an operand of the T1_node.
+                    singles_holder.put(node, Integer.parseInt(node.value)); //appending to the map only in case of an operand of the T1_node.
                 }else{
-                    singles_holder.remove(Integer.parseInt(node.value), node); //removing from the map only in case of an operand of the T2_node.
+                    singles_holder.remove(node, Integer.parseInt(node.value)); //removing from the map only in case of an operand of the T2_node.
                 }
             }
-            if(node.left.value != null) rec_equivalence(node.left, B, singles_holder);
-            if(node.right.value != null) rec_equivalence(node.right, B, singles_holder);
+            if(node.left != null) rec_equivalence(node.left, B, singles_holder);
+            if(node.right != null) rec_equivalence(node.right, B, singles_holder);
         }
         //else: returning void.
     }
