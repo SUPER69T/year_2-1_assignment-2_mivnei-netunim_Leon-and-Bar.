@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -172,11 +173,11 @@ public class ExpressionTree{
         return result;
     }
     ///*
-    /**Creates a hashedmap and calls - rec_equivalence() method.
+    /**Creates an ArrayList and calls - rec_equivalence() method.
      *
      * @Params: T1_node, T2_node.
      *
-     * @Returns: a boolean expression evaluation of whether the Hashmap is empty or isn't -
+     * @Returns: a boolean expression evaluation of whether the ArrayList is empty or isn't -
      * that will tell whether all operands of both trees match each other.
      */
     public boolean areExpressionsEquivalent(Node T1_node, Node T2_node){
@@ -184,47 +185,50 @@ public class ExpressionTree{
         if(T1_node.value == null && T2_node.value == null) return true;
         else if(T1_node.value == null || T2_node.value == null) return false;
         //
-        HashMap<String, Node> singles_holder = new HashMap<>();
+        ArrayList<String> values_list = new ArrayList<>();
         //
         System.out.println("singles_holder recursive printing for - T1:");
-        rec_equivalence(T1_node, true, singles_holder); //true = T1_node.
+        rec_equivalence(T1_node, true, values_list); //true = T1_node.
         System.out.println("singles_holder recursive printing for - T2:");
-        rec_equivalence(T2_node, false, singles_holder); //false = T2_node.
-        return singles_holder.size() == 0;
+        rec_equivalence(T2_node, false, values_list); //false = T2_node.
+        return values_list.size() == 0;
     }
     //*/
     ///*
     /**An accommodating method for areExpressionsEquivalent.
      * Recursively iterates over each tree root and child - nodes and either -
-     * adds them to the Hashmap or removes them, depending on the boolean - B variable.
+     * adds them to the ArrrayList or removes them, depending on the boolean - B variable.
      *
      *@Params: node - T1/T2 roots and their child-nodes.
      *
      *@param: B - a boolean variable, telling which tree is currently running: T1/T2.
      *
-     *@param: singles_holder - the Hashmap from areExpressionsEquivalent, being modified.
-     *        HashMap: Key is of String type, Value is of Node.
+     *@param: values_list - the ArrayList from areExpressionsEquivalent, being modified.
+     *        values_list is holding String-type values.
      *
      * @Returns: void.
      */
-    public void rec_equivalence(Node node, Boolean B, HashMap<String, Node> singles_holder){
-        if (node != null){ //checking for null-base case.
+    public void rec_equivalence(Node node, Boolean B, ArrayList<String> values_list){
+        if(node != null){ //checking for null-base case.
             //Printing:
             System.out.print("current node.value - " + node.value + ";      ");
-            singles_holder.forEach((k,v)->System.out.print(k));
-            System.out.print(".\n");
-
+            //
             if(!OP.isOperator(node.value)){ //checking that the node is an operand.
-                if(B){ //boolean variable.
-                    singles_holder.put(node.value, node); //appending to the map only in case of an operand of the T1_node.
-                }else{
-                    if(singles_holder.containsKey(node.value)) singles_holder.remove(node.value); //removing from the map only in case of an operand of the T2_node.
-                    else singles_holder.put(node.value, node);
+                if(B){ //if T1:
+                    values_list.add(node.value); //appending to values_list only in case of an operand of the T1_node.
+                }
+                else{ //if T2:
+                    if(values_list.contains(node.value)) values_list.remove(node.value); //removing from values_list only in case of an operand of the T2_node.
+                    else values_list.add(node.value);
                 }
             }
             //else: continues to recursion. continues both in operator and operand cases:
-            if(node.left != null) rec_equivalence(node.left, B, singles_holder);
-            if(node.right != null) rec_equivalence(node.right, B, singles_holder);
+            //Printing:
+            values_list.forEach(s->System.out.print(s));
+            System.out.print(".\n");
+            //
+            if(node.left != null) rec_equivalence(node.left, B, values_list);
+            if(node.right != null) rec_equivalence(node.right, B, values_list);
         }
         //else: returning void.
     }
