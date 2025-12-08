@@ -172,42 +172,57 @@ public class ExpressionTree{
         return result;
     }
     ///*
-    /**
+    /**Creates a hashedmap and calls - rec_equivalence() method.
      *
+     * @Params: T1_node, T2_node.
      *
+     * @Returns: a boolean expression evaluation of whether the Hashmap is empty or isn't -
+     * that will tell whether all operands of both trees match each other.
      */
     public boolean areExpressionsEquivalent(Node T1_node, Node T2_node){
         //checking - 3 null cases:
         if(T1_node.value == null && T2_node.value == null) return true;
         else if(T1_node.value == null || T2_node.value == null) return false;
         //
-        HashMap<Node, Integer> singles_holder = new HashMap<>();
-        System.out.println("singles_holder: " + singles_holder);
+        HashMap<String, Node> singles_holder = new HashMap<>();
+        //
+        System.out.println("singles_holder recursive printing for - T1:");
         rec_equivalence(T1_node, true, singles_holder); //true = T1_node.
+        System.out.println("singles_holder recursive printing for - T2:");
         rec_equivalence(T2_node, false, singles_holder); //false = T2_node.
         return singles_holder.size() == 0;
     }
     //*/
     ///*
     /**An accommodating method for areExpressionsEquivalent.
+     * Recursively iterates over each tree root and child - nodes and either -
+     * adds them to the Hashmap or removes them, depending on the boolean - B variable.
      *
      *@Params: node - T1/T2 roots and their child-nodes.
      *
-     *@param: B - A boolean variable, telling which tree is currently running: T1/T2.
+     *@param: B - a boolean variable, telling which tree is currently running: T1/T2.
      *
-     *@param: singles_holder - the map from areExpressionsEquivalent, being modified.
+     *@param: singles_holder - the Hashmap from areExpressionsEquivalent, being modified.
+     *        HashMap: Key is of String type, Value is of Node.
      *
      * @Returns: void.
      */
-    public void rec_equivalence(Node node, Boolean B, HashMap<Node, Integer> singles_holder){
+    public void rec_equivalence(Node node, Boolean B, HashMap<String, Node> singles_holder){
         if (node != null){ //checking for null-base case.
+            //Printing:
+            System.out.print("current node.value - " + node.value + ";      ");
+            singles_holder.forEach((k,v)->System.out.print(k));
+            System.out.print(".\n");
+
             if(!OP.isOperator(node.value)){ //checking that the node is an operand.
                 if(B){ //boolean variable.
-                    singles_holder.put(node, Integer.parseInt(node.value)); //appending to the map only in case of an operand of the T1_node.
+                    singles_holder.put(node.value, node); //appending to the map only in case of an operand of the T1_node.
                 }else{
-                    singles_holder.remove(node, Integer.parseInt(node.value)); //removing from the map only in case of an operand of the T2_node.
+                    if(singles_holder.containsKey(node.value)) singles_holder.remove(node.value); //removing from the map only in case of an operand of the T2_node.
+                    else singles_holder.put(node.value, node);
                 }
             }
+            //else: continues to recursion. continues both in operator and operand cases:
             if(node.left != null) rec_equivalence(node.left, B, singles_holder);
             if(node.right != null) rec_equivalence(node.right, B, singles_holder);
         }
@@ -241,10 +256,11 @@ public class ExpressionTree{
         //for exercise 4:
         //-----
         ExpressionTree et1 = new ExpressionTree();
-        String postfix1 = "4 3 7 + + 5 3 4 + + + 6 +";
+        String postfix1 = "4 3 7 + + 5 3 4 + + + 6 +"; //(3)x2,(4)x2,(5)x1,(6)x1,(7)x1.
         Node root1 = et1.createExprTreePostfix(postfix1);
         ExpressionTree et2 = new ExpressionTree();
-        String postfix2 = "4 4 7 + + 3 6 5 + + + 3 +";
+        //String postfix2 = "+ + 4 + + + 4 7 3 6 + 5 3";
+        String postfix2 = "4 5 4 + + 3 3 6 + + + 7 +"; //(3)x2,(4)x2,(5)x1,(6)x1,(7)x1.
         Node root2 = et2.createExprTreePostfix(postfix2);
         ExpressionTree Test = new ExpressionTree();
         System.out.print(Test.areExpressionsEquivalent(root1, root2));
