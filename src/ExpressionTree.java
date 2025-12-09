@@ -187,9 +187,9 @@ public class ExpressionTree{
         //
         ArrayList<String> values_list = new ArrayList<>();
         //
-        System.out.println("singles_holder recursive printing for - T1:");
+        System.out.println("\nvalues_list recursive printing for - T1:\n");
         rec_equivalence(T1_node, true, values_list); //true = T1_node.
-        System.out.println("singles_holder recursive printing for - T2:");
+        System.out.println("\nvalues_list recursive printing for - T2:\n");
         rec_equivalence(T2_node, false, values_list); //false = T2_node.
         return values_list.size() == 0;
     }
@@ -208,7 +208,8 @@ public class ExpressionTree{
      *
      * @Returns: void.
      */
-    public void rec_equivalence(Node node, Boolean B, ArrayList<String> values_list){
+    public void rec_equivalence(Node node, Boolean B, ArrayList<String> values_list){ //a pretty badly optimized code overall -
+        // should have probably just hashed the Integers as array-indexes. like GPT recommended me to do after I showed it this code...
         if(node != null){ //checking for null-base case.
             //Printing:
             System.out.print("current node.value - " + node.value + ";      ");
@@ -239,35 +240,41 @@ public class ExpressionTree{
 
         Node root = et.createExprTreePostfix(postfix);
 
-        /*
+        ///*
         System.out.print("In-order: ");
         et.inOrder(root);
         System.out.println();
-        */
-        /*
+        //*/
+        ///*
         System.out.print("Pre-order: ");
         et.preOrder(root);
         System.out.println();
-        */
-        /*
+        //*/
+        ///*
         System.out.print("Post-order: ");
         et.postOrder(root);
         System.out.println();
-        */
-        /*
+        //*/
+        ///*
         System.out.println("Evaluated Result: " + et.evaluateExpression(root) + ".");
-        */
-        //for exercise 4:
+        //*/
+        ///*
+        //checks for exercise 4:
         //-----
-        ExpressionTree et1 = new ExpressionTree();
         String postfix1 = "4 3 7 + + 5 3 4 + + + 6 +"; //(3)x2,(4)x2,(5)x1,(6)x1,(7)x1.
-        Node root1 = et1.createExprTreePostfix(postfix1);
-        ExpressionTree et2 = new ExpressionTree();
+        Node root1 = et.createExprTreePostfix(postfix1);
         //String postfix2 = "+ + 4 + + + 4 7 3 6 + 5 3";
         String postfix2 = "4 5 4 + + 3 3 6 + + + 7 +"; //(3)x2,(4)x2,(5)x1,(6)x1,(7)x1.
-        Node root2 = et2.createExprTreePostfix(postfix2);
-        ExpressionTree Test = new ExpressionTree();
-        System.out.print(Test.areExpressionsEquivalent(root1, root2));
+        Node root2 = et.createExprTreePostfix(postfix2);
+        String false_postfix3 = "4 3 7 * + 5 3 4 +";  //isn't equal to the other Trees.
+        Node false_root = et.createExprTreePostfix(false_postfix3);
+        System.out.println("\n-" + et.areExpressionsEquivalent(root, root1) + ".\n");
+        //returns: True
+        System.out.println("\n-" + et.areExpressionsEquivalent(root1, root2) + ".\n");
+        //returns: True.
+        System.out.println("\n-" + et.areExpressionsEquivalent(root2, false_root) + ".\n");
+        //returns: False.
         //-----
+        //*/
     }
 }
